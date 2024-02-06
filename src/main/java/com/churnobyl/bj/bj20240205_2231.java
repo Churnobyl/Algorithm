@@ -4,20 +4,31 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class bj20240225_2292 {
+public class bj20240205_2231 {
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		int N = Integer.parseInt(br.readLine());
-		int total = 1;
-		int idx = 1;
-		
-		
-		while (N > total) {
-			total += 6 * idx;
-			idx++;
+		boolean flag = false;
+
+		for (int i = 0; i < N; i++) {
+			int total = i;
+			
+			int b = i;
+
+			while (b != 0) {
+				total += b % 10;
+				b /= 10;
+			}
+
+			if (total == N) {
+				System.out.println(i);
+				flag = true;
+				break;
+			}
 		}
-		
-		System.out.println(idx);
+
+		if (!flag)
+			System.out.println(0);
 	}
 }
