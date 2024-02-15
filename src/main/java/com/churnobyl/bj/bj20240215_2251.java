@@ -5,15 +5,19 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class bj20240215_2251 {
-	static int A, B, C;
-	static boolean[] visited;
+	static int A, B, C, zero;
+	static boolean[][][] visited;
 	static int[] capacity;
+	static Set<Integer> set = new HashSet<>();
 	
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -25,7 +29,7 @@ public class bj20240215_2251 {
 		B = Integer.parseInt(st.nextToken());
 		C = Integer.parseInt(st.nextToken());
 		
-		visited = new boolean[C + 1];
+		visited = new boolean[A + 1][B + 1][C + 1];
 		capacity = new int[] {A, B, C};
 		
 		Queue<int[]> queue = new LinkedList<>();
@@ -34,34 +38,41 @@ public class bj20240215_2251 {
 		
 		// A -> B : 1, A -> C : 2, B -> A : 3, B -> C : 4, C -> A : 5, C -> B : 6
 		while (!queue.isEmpty()) {
-			System.out.println(Arrays.toString(visited));
-			
 			int[] data = queue.poll();
 
-			if (visited[data[2]])
-				continue;
+			if (visited[data[0]][data[1]][data[2]]) continue;
 			
-			visited[data[2]] = true;
+			if (data[0] == 0 && !visited[data[0]][data[1]][data[2]]) {
+				set.add(data[2]);
+			}
+			
+			visited[data[0]][data[1]][data[2]] = true;
+			
 			
 			for (int i = 0; i < 3; i++) {
-				if (data[i] == 0)
-					continue;
-				
 				for (int j = 0; j < 3; j++) {
-					if (i == j || capacity[j] == data[j]) continue;
-//
-//					if (data[i] >= 
-//					
-//					int b = capacity[j] - ;
-//					int a = 0;
-//					
-//					int[] newData = data.clone();
-//					newData[i] = a;
-//					newData[j] = b;
-//					
-//					queue.add(newData);
+					if (i == j) continue;
+
+					int[] newData = data.clone();
+					
+					int move = Math.min(data[i], capacity[j] - data[j]);
+					newData[i] -= move;
+					newData[j] += move;
+					
+					queue.add(newData);
 				}
 			}
 		}
+		
+		ArrayList<Integer> result = new ArrayList<>(set);
+		
+		Collections.sort(result);
+		
+		for (Object a : result) {
+			bw.append((int) a + " ");
+		}
+		
+		bw.flush();
+		bw.close();
 	}
 }
