@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-public class bj20240216_15645 {
+public class bj20240216_2096 {
 	static int N;
 	static int[][] numbers;
 	static int[][][] dp;
