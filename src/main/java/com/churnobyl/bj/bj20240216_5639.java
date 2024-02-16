@@ -13,10 +13,6 @@ class Node {
 	}
 }
 
-class Tree {
-	
-}
-
 public class bj20240216_5639 {
 	static String data;
 	static Node root;
