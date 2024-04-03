@@ -33,10 +33,7 @@ public class Main {
 	}
 
 	private static int recursion(int y, int x, int count) {
-		if (dp[y][x] != 0)
-			return dp[y][x];
-
-		dp[y][x] = 1;
+		boolean isEnd = true;
 
 		for (int i = 0; i < 4; i++) {
 			int ny = y + dy[i];
@@ -44,9 +41,19 @@ public class Main {
 
 			if (0 <= ny && ny < n && 0 <= nx && nx < n) {
 				if (map[y][x] < map[ny][nx]) {
-					dp[y][x] = Math.max(recursion(ny, nx, count + 1) + 1, dp[y][x]);
+					if (dp[ny][nx] != 0) {
+						dp[y][x] = Math.max(dp[y][x], dp[ny][nx] + 1);
+					} else {
+						dp[y][x] = Math.max(recursion(ny, nx, count + 1) + 1, dp[y][x]);						
+					}
+					isEnd = false;
 				}
 			}
+		}
+
+		if (isEnd) {
+			dp[y][x] = 1;
+			return 1;
 		}
 
 		return dp[y][x];
