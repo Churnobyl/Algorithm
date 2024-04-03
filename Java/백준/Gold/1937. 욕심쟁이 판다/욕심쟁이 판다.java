@@ -1,6 +1,7 @@
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
 	static int n, max;
@@ -10,21 +11,23 @@ public class Main {
 	static int[][] dp;
 
 	public static void main(String[] args) throws IOException {
-		Scanner sc = new Scanner(System.in);
-		n = sc.nextInt();
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
+		n = Integer.parseInt(br.readLine());
 		map = new int[n][n];
 		dp = new int[n][n];
 
 		for (int i = 0; i < n; i++) {
+			st = new StringTokenizer(br.readLine());
 			for (int j = 0; j < n; j++) {
-				map[i][j] = sc.nextInt();
+				map[i][j] = Integer.parseInt(st.nextToken());
 			}
 		}
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (dp[i][j] == 0) {
-					max = Math.max(recursion(i, j, 1), max);
+					max = Math.max(recursion(i, j), max);
 				}
 			}
 		}
@@ -32,8 +35,11 @@ public class Main {
 		System.out.println(max);
 	}
 
-	private static int recursion(int y, int x, int count) {
-		boolean isEnd = true;
+	private static int recursion(int y, int x) {
+		if (dp[y][x] != 0)
+			return dp[y][x];
+
+		dp[y][x] = 1;
 
 		for (int i = 0; i < 4; i++) {
 			int ny = y + dy[i];
@@ -41,19 +47,9 @@ public class Main {
 
 			if (0 <= ny && ny < n && 0 <= nx && nx < n) {
 				if (map[y][x] < map[ny][nx]) {
-					if (dp[ny][nx] != 0) {
-						dp[y][x] = Math.max(dp[y][x], dp[ny][nx] + 1);
-					} else {
-						dp[y][x] = Math.max(recursion(ny, nx, count + 1) + 1, dp[y][x]);						
-					}
-					isEnd = false;
+					dp[y][x] = Math.max(recursion(ny, nx) + 1, dp[y][x]);
 				}
 			}
-		}
-
-		if (isEnd) {
-			dp[y][x] = 1;
-			return 1;
 		}
 
 		return dp[y][x];
