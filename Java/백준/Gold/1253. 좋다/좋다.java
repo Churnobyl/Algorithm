@@ -1,48 +1,47 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    static int N;
-    static int[] arr;
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-        N = Integer.parseInt(br.readLine());
-        arr = new int[N];
-        
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        
-        for (int i = 0; i < N; i++) {
+        int n = Integer.parseInt(br.readLine());
+        int arr[] = new int[n];
+
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < n; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
-        
+
         Arrays.sort(arr);
-        int goodCount = 0;
-        
-        for (int k = 0; k < N; k++) {
-            if (isGood(k)) {
-                goodCount++;
-            }
-        }
-        
-        System.out.println(goodCount);
-    }
-    
-    private static boolean isGood(int k) {
-        int target = arr[k];
-        for (int i = 0; i < N; i++) {
-            if (i == k) continue;
-            for (int j = i + 1; j < N; j++) {
-                if (j == k) continue;
-                if (arr[i] + arr[j] == target) {
-                    return true;
+
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+
+            int left = 0;
+            int right = n - 1;
+            while (left < right) {
+                if(left == i) {
+                    left++;
+                    continue;
+                }
+                if(right == i) {
+                    right--;
+                    continue;
+                }
+
+                int sum = arr[left] + arr[right];
+
+                if(sum < arr[i]) left++;
+                else if(arr[i] < sum) right--;
+                else {
+                    result++;
+                    break;
                 }
             }
         }
-        return false;
+
+        System.out.println(result);
     }
 }
