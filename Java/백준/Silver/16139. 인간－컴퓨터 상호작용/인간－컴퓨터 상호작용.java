@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 public class Main {
 
@@ -25,6 +24,8 @@ public class Main {
 
         int n = Integer.parseInt(br.readLine());
 
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < n; i++) {
             String[] s = br.readLine().split(" ");
 
@@ -32,12 +33,10 @@ public class Main {
             int l = Integer.parseInt(s[1]);
             int r = Integer.parseInt(s[2]);
 
-            if (l < 1) {
-                System.out.println(set[r][c]);
-            } else {
-                System.out.println(set[r][c] - set[l - 1][c]);
-            }
+            sb.append(set[r][c] - (l == 0 ? 0 : set[l - 1][c])).append("\n");
         }
+
+        System.out.println(sb);
     }
 
 }
