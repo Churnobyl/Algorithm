@@ -95,8 +95,6 @@ public class Main {
      * @throws IOException 입력 예외 처리
      */
     private static void setting(BufferedReader br) throws IOException {
-        queue.clear();
-        cache.clear(); // 캐시 클리어
         target = 0; // 타겟 보드 초기화
 
         // 각 타일을 흰색 0, 검은색 1로 생각했을 때 이진수 9자리로 표현 가능
