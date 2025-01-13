@@ -55,7 +55,7 @@ public class Main {
         // BFS
         // Pointer의 dmap이 작은 순서대로 뽑기
         PriorityQueue<Pointer> pq = new PriorityQueue<>(Comparator.comparingLong(p -> p.point));
-        Set<String> visited = new HashSet<>(); // 중복 탐색 방지
+        Map<Integer, Long> minDmapForVal = new HashMap<>(); // 중복 탐색 방지
         pq.add(new Pointer("()", 1));
         pq.add(new Pointer("{}", 2));
         pq.add(new Pointer("[]", 3));
@@ -72,10 +72,11 @@ public class Main {
             }
 
             // 방문 확인
-            if (visited.contains(curr.brackets)) {
+            if (minDmapForVal.containsKey(curr.val) && minDmapForVal.get(curr.val) <= curr.point) {
                 continue;
             }
-            visited.add(curr.brackets);
+
+            minDmapForVal.put(curr.val, curr.point);
 
             // 둘러쌓인 괄호 연산
             if (curr.val * 2 <= n) pq.add(new Pointer("(" + curr.brackets + ")", curr.val * 2));
