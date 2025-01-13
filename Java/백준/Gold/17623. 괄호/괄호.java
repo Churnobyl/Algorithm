@@ -1,120 +1,72 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
 
 public class Main {
-    static int T, N;
-    static Map<Character, Integer> bracketMapper = new HashMap<>();
-    static Map<Integer, Pointer> cache = new HashMap<>(); // 각 점수별 최소 Pointer 담음
-
-    // 각 괄호식의 정보를 담는 클래스
-    static class Pointer {
-        String brackets;
-        long point; // dmap 결과값 = dmap(brackets)
-        int val;    // 괄호 자체 값 = val(brackets)
-
-        public Pointer(String brackets, int val) {
-            this.brackets = brackets;
-            this.val = val;
-            this.point = dMap(brackets);
-        }
-
-        public long dMap(String brackets) {
-            long result = 0;
-            for (int i = 0; i < brackets.length(); i++) {
-                result = result * 10 + bracketMapper.get(brackets.charAt(i));
-            }
-            return result;
-        }
-    }
+    static String[] dp; // DP 배열
+    static char[] c = {'(', ')', '{', '}', '[', ']'}; // 괄호 매핑
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        T = Integer.parseInt(br.readLine());
+        int t = Integer.parseInt(br.readLine());
 
-        setting();
+        // 테스트 케이스 최대값 계산
+        int maxN = 0;
+        int[] testCases = new int[t];
+        for (int i = 0; i < t; i++) {
+            testCases[i] = Integer.parseInt(br.readLine());
+            maxN = Math.max(maxN, testCases[i]);
+        }
 
+        // DP 테이블 계산
+        computeDP(maxN);
+
+        // 결과 출력
         StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < T; i++) {
-            N = Integer.parseInt(br.readLine());
-            Pointer result = run(N);
-            sb.append(result.brackets).append("\n");
+        for (int n : testCases) {
+            StringBuilder result = new StringBuilder();
+            for (int j = 0; j < dp[n].length(); j++) {
+                result.append(c[dp[n].charAt(j) - '1']);
+            }
+            sb.append(result).append("\n");
         }
 
         System.out.println(sb);
     }
 
-    private static Pointer run(int n) {
-        // 이미 해당 n값에 대해 최소 Pointer가 있으면 그 값 리턴
-        if (cache.containsKey(n)) {
-            return cache.get(n);
-        }
-        
-        // BFS
-        // Pointer의 dmap이 작은 순서대로 뽑기
-        PriorityQueue<Pointer> pq = new PriorityQueue<>(Comparator.comparingLong(p -> p.point));
-        Map<Integer, Long> minDmapForVal = new HashMap<>(); // 중복 탐색 방지
-        pq.add(new Pointer("()", 1));
-        pq.add(new Pointer("{}", 2));
-        pq.add(new Pointer("[]", 3));
+    private static void computeDP(int maxN) {
+        dp = new String[maxN + 1];
 
-        // dmap이 가장 작은 값부터 뽑으면서 n에 해당하는 정답이 나올 때까지 BFS
-        // 그리고 각 테스트 케이스에 사용하기 위해 결과는 cache에 저장
-        while (!pq.isEmpty()) {
-            Pointer curr = pq.poll(); 
+        // 초기값 설정
+        dp[1] = "12"; // ()
+        dp[2] = "34"; // {}
+        dp[3] = "56"; // []
 
-            // n과 같은 값이 나오면 정답. 리턴
-            if (curr.val == n) {
-                cache.put(n, curr);
-                return curr;
+        // DP 계산
+        for (int i = 4; i <= maxN; i++) {
+            dp[i] = null;
+
+            // x2, x3, x5 괄호 감싸기 연산
+            if (i % 2 == 0) {
+                dp[i] = cmp(dp[i], "1" + dp[i / 2] + "2"); // (X)
+            }
+            if (i % 3 == 0) {
+                dp[i] = cmp(dp[i], "3" + dp[i / 3] + "4"); // {X}
+            }
+            if (i % 5 == 0) {
+                dp[i] = cmp(dp[i], "5" + dp[i / 5] + "6"); // [X]
             }
 
-            // 방문 확인
-            if (minDmapForVal.containsKey(curr.val) && minDmapForVal.get(curr.val) <= curr.point) {
-                continue;
-            }
-
-            minDmapForVal.put(curr.val, curr.point);
-
-            // 둘러쌓인 괄호 연산
-            if (curr.val * 2 <= n) pq.add(new Pointer("(" + curr.brackets + ")", curr.val * 2));
-            if (curr.val * 3 <= n) pq.add(new Pointer("{" + curr.brackets + "}", curr.val * 3));
-            if (curr.val * 5 <= n) pq.add(new Pointer("[" + curr.brackets + "]", curr.val * 5));
-
-            // 괄호 추가 연산 앞, 뒤
-            // 어떤 게 더 작은 값인지 모르니까 둘 다 해봐야 함
-            if (curr.val + 1 <= n) {
-                pq.add(new Pointer(curr.brackets + "()", curr.val + 1));
-                pq.add(new Pointer("()" + curr.brackets, curr.val + 1));
-            }
-            if (curr.val + 2 <= n) {
-                pq.add(new Pointer(curr.brackets + "{}", curr.val + 2));
-                pq.add(new Pointer("{}" + curr.brackets, curr.val + 2));
-            }
-            if (curr.val + 3 <= n) {
-                pq.add(new Pointer(curr.brackets + "[]", curr.val + 3));
-                pq.add(new Pointer("[]" + curr.brackets, curr.val + 3));
+            // 덧셈 연산
+            for (int j = 1; j < i; j++) {
+                dp[i] = cmp(dp[i], dp[j] + dp[i - j]);
             }
         }
-
-        return null;
     }
 
-    /**
-     * 초기 세팅 메서드
-     */
-    private static void setting() {
-        bracketMapper.put('(', 1);
-        bracketMapper.put(')', 2);
-        bracketMapper.put('{', 3);
-        bracketMapper.put('}', 4);
-        bracketMapper.put('[', 5);
-        bracketMapper.put(']', 6);
-
-        cache.put(1, new Pointer("()", 1));
-        cache.put(2, new Pointer("{}", 2));
-        cache.put(3, new Pointer("[]", 3));
+    private static String cmp(String a, String b) {
+        if (a == null || a.length() > b.length()) return b; // a가 없거나 길이가 더 크면 b 선택
+        if (b.length() > a.length()) return a; // b의 길이가 더 크면 a 선택
+        return a.compareTo(b) <= 0 ? a : b; // 길이가 같으면 사전 순 비교
     }
 }
