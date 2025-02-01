@@ -1,29 +1,26 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-/**
- * 중복 제거
- */
 public class Main {
-    static Set<Integer> set = new LinkedHashSet<>();
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         StringBuilder sb = new StringBuilder();
 
+        int MAX_VALUE = 33554432; // 2^25
+        int[] bitSet = new int[MAX_VALUE / 32]; // 비트 배열 (int형 배열 사용)
+
         while (st.hasMoreTokens()) {
-            int data = Integer.parseInt(st.nextToken());
-            if (!set.contains(data)) {
-                set.add(data);
-                sb.append(data).append(" ");
+            int num = Integer.parseInt(st.nextToken());
+            int index = num / 32; // 해당 숫자가 저장될 int 배열의 인덱스
+            int bit = 1 << (num % 32); // 해당 숫자의 비트 위치
+
+            if ((bitSet[index] & bit) == 0) { // 아직 등장하지 않은 숫자라면
+                bitSet[index] |= bit; // 해당 비트를 켜기
+                sb.append(num).append(" ");
             }
         }
 
-        System.out.println(sb);
+        System.out.println(sb.toString().trim()); // 결과 출력
     }
 }
