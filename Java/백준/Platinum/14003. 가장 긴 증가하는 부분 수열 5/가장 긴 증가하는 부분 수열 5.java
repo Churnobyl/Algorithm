@@ -1,53 +1,73 @@
 import java.io.*;
 import java.util.*;
 
+/**
+ * LIS - DP + 이분탐색으로 풀기2
+ */
 public class Main {
-    static int n;
-    static int[] arr, dp, path;
-    static ArrayList<Integer> lis = new ArrayList<>();
-    static int[] index;
+    static int N;
+    static int[] arr;
 
     public static void main(String[] args) throws IOException {
+        setting(); // 입력 세팅
+
+        List<Integer> sequence = solve();
+
+        // 결과 출력
+        StringBuilder sb = new StringBuilder();
+        sb.append(sequence.size()).append("\n");
+
+        for (Integer elem : sequence) {
+            sb.append(elem).append(" ");
+        }
+
+        System.out.println(sb);
+    }
+
+    private static List<Integer> solve() {
+        List<Integer> LIS = new ArrayList<>(); // LIS 리스트 초기화
+        int[] prev = new int[N]; // LIS에 속하는 원소를 추적하기 위한 prev 배열
+        List<Integer> indexList = new ArrayList<>(); // LIS 리스트에 속한 원소의 실제 arr에서의 인덱스 저장
+        Arrays.fill(prev, -1); // 이전 인덱스가 없음을 확인하기 위해 -1로 초기화
+
+        // 원소들을 순회하면서
+        for (int i = 0; i < N; i++) {
+            int idx = Collections.binarySearch(LIS, arr[i]); // 배열 안에 원소가 들어갈 위치를 찾기 위해 이분탐색
+            if (idx < 0) idx = -(idx + 1); // lower_bound 위치 찾기
+
+            if (idx == LIS.size()) { // idx가 배열의 인덱스보다 더 큰 인덱스를 가리키면 어느 값보다도 큰 값이란 뜻
+                LIS.add(arr[i]); // 배열에 추가
+                indexList.add(i); // indexList에도 동일한 위치에 i도 저장
+            }
+            else { // 아니면
+                LIS.set(idx, arr[i]); // 배열 안에 해당 원소를 업데이트
+                indexList.set(idx, i); // indexList에도 동일한 위치에 i로 업데이트
+            }
+            // LIS 리스트에 첫번째로 추가된 값을 제외하고
+            if (idx > 0) prev[i] = indexList.get(idx - 1); // LIS배열에 idx - 1에 저장되어 있는 인덱스 저장
+        }
+
+        // LIS 원소 역추적
+        List<Integer> lisSequence = new ArrayList<>();
+        int lastIdx = indexList.get(indexList.size() - 1); // LIS에 저장된 마지막 인덱스 가져오기
+        while (lastIdx != -1) { // 가장 처음으로 돌아갈 때까지
+            lisSequence.add(arr[lastIdx]);
+            lastIdx = prev[lastIdx]; // 이전 인덱스로 업데이트
+        }
+        Collections.reverse(lisSequence); // 마지막부터 거꾸로 삽입했으므로 다시 바꾸기
+
+        return lisSequence;
+    }
+
+    private static void setting() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        N = Integer.parseInt(br.readLine());
+        arr = new int[N];
+
         StringTokenizer st = new StringTokenizer(br.readLine());
-
-        n = Integer.parseInt(st.nextToken());
-        arr = new int[n];
-        dp = new int[n];  // LIS의 길이 저장
-        path = new int[n]; // 역추적을 위한 배열
-        index = new int[n]; // LIS 위치 저장
-
-        st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
-        }
-
-        Arrays.fill(path, -1);
-
-        for (int i = 0; i < n; i++) {
-            int pos = Collections.binarySearch(lis, arr[i]);
-            if (pos < 0) pos = -pos - 1; // lower_bound 찾기
-
-            if (pos == lis.size()) lis.add(arr[i]);
-            else lis.set(pos, arr[i]); // LIS 길이 유지
-
-            dp[i] = pos + 1; // LIS 길이 저장
-            index[pos] = i; // LIS 위치 저장
-            if (pos > 0) path[i] = index[pos - 1]; // 이전 원소 연결
-        }
-
-        // LIS 길이 출력
-        System.out.println(lis.size());
-
-        // LIS 실제 수열 역추적
-        Stack<Integer> lisStack = new Stack<>();
-        for (int i = index[lis.size() - 1]; i != -1; i = path[i]) {
-            lisStack.push(arr[i]);
-        }
-
-        // LIS 수열 출력
-        while (!lisStack.isEmpty()) {
-            System.out.print(lisStack.pop() + " ");
         }
     }
 }
