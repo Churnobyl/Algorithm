@@ -46,7 +46,7 @@ public class Main {
                 }
 
                 union(map.get(f1), map.get(f2));
-                int result = friends[find(map.get(f1))];
+                int result = friends[Math.min(p[map.get(f1)], p[map.get(f2)])];
                 sb.append(result).append("\n");
             }
         }
@@ -56,7 +56,7 @@ public class Main {
 
     private static int find(int x) {
         if (p[x] == x) return x;
-        return find(p[x]);
+        return p[x] = find(p[x]);
     }
 
     private static boolean union(int x, int y) {
@@ -65,8 +65,8 @@ public class Main {
 
         if (x == y) return false;
 
-        p[y] = x;
-        friends[x] += friends[y];
+        p[Math.max(x, y)] = Math.min(x, y);
+        friends[Math.min(x, y)] += friends[Math.max(x, y)];
         return true;
     }
 }
