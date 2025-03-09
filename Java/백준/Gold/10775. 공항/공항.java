@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 public class Main {
     static int G, P;
@@ -11,10 +10,10 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         G = Integer.parseInt(br.readLine());
-        gates = new int[G + 1];
+        gates = new int[G + 1]; // 1 ~ i번 중 도킹할 수 있는 가장 큰 게이트 번호
 
         for (int i = 1; i < G + 1; i++) {
-            gates[i] = i; // 본인 게이트와 같은 값일 경우 도킹 가능
+            gates[i] = i; // 초기 자신의 게이트 번호로 초기화
         }
 
         P = Integer.parseInt(br.readLine());
@@ -24,7 +23,7 @@ public class Main {
         for (int i = 0; i < P; i++) {
             int gi = Integer.parseInt(br.readLine());
 
-            if (docking(gi) == -1) {
+            if (docking(gi) == -1) { // 도킹이 더이상 불가능 하다면
                 break;
             } else{
                 count++;
@@ -42,8 +41,7 @@ public class Main {
             gates[gi] = gates[gi - 1];
             return gates[gi];
         } else {
-            int canDock = docking(gates[gi]);
-            gates[gi] = canDock;
+            gates[gi] = docking(gates[gi]);
             return gates[gi];
         }
     }
