@@ -30,28 +30,28 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < m; i++) {
             int winner = Integer.parseInt(st.nextToken());
-            int prefix = rangeSum(1, winner - 1);
+            int prefix = query(1, 1, offset, 1, winner - 1);
             int X = prefix + 1;
 
             sb.append(X).append(" ");
             update(winner);
         }
 
-        System.out.println(sb.toString().trim());
+        System.out.println(sb);
     }
 
-    private static int rangeSum(int l, int r) {
-        if(l > r) return 0;
-        int sum = 0;
-        int left = offset + l - 1;
-        int right = offset + r - 1;
-        while(left <= right) {
-            if(left % 2 == 1) sum += segTree[left++];
-            if(right % 2 == 0) sum += segTree[right--];
-            left /= 2;
-            right /= 2;
+    private static int query(int node, int nodeLeft, int nodeRight, int queryLeft, int queryRight) {
+        if (queryRight < nodeLeft || queryLeft > nodeRight) {
+            return 0;
         }
-        return sum;
+
+        if (queryLeft <= nodeLeft && nodeRight <= queryRight) {
+            return segTree[node];
+        }
+
+        int mid = (nodeLeft + nodeRight) / 2;
+
+        return query(node * 2, nodeLeft, mid, queryLeft, queryRight) + query(node * 2 + 1, mid + 1, nodeRight, queryLeft, queryRight);
     }
 
     private static void update(int k) {
