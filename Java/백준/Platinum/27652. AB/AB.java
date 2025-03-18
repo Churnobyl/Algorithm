@@ -53,33 +53,30 @@ public class Main {
     private static int find(String data) {
         int sum = 0;
 
-        for (int i = 1; i < data.length(); i++) {
-            sum += query(A, data.substring(0, i)) * query(B, data.substring(i));
+        int[] resultA = query(A, data);
+        int[] resultB = query(B, new StringBuilder(data).reverse().toString());
+
+        for (int i = 0; i < data.length() - 1; i++) {
+            sum += resultA[i] * resultB[data.length() - i - 2];
         }
 
         return sum;
     }
 
-    private static int query(Node set, String substring) {
-        if (set == A) {
-            for (int i = 0; i < substring.length(); i++) {
-                set = set.alphabet[substring.charAt(i) - 'a'];
+    private static int[] query(Node set, String str) {
+        int[] result = new int[str.length()];
+
+            for (int i = 0; i < str.length(); i++) {
+                set = set.alphabet[str.charAt(i) - 'a'];
 
                 if (set == null) {
-                    return 0;
+                    break;
                 }
-            }
-        } else {
-            for (int i = substring.length() - 1; i >= 0; i--) {
-                set = set.alphabet[substring.charAt(i) - 'a'];
 
-                if (set == null) {
-                    return 0;
-                }
+                result[i] = set.count;
             }
-        }
 
-        return set.count;
+        return result;
     }
 
     public static void delete(String set, String data) {
