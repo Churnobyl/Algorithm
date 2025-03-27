@@ -14,8 +14,12 @@ public class Main {
             answer.put(a, answer.getOrDefault(a, 0) + 1);
         }
 
+        StringBuilder sb = new StringBuilder();
+
         for (Map.Entry<String, Integer> entry : answer.entrySet()) {
-            System.out.println(entry.getKey() + " " + entry.getValue());
+            sb.append(entry.getKey()).append(" ").append(entry.getValue()).append("\n");
         }
+
+        System.out.println(sb);
     }
 }
