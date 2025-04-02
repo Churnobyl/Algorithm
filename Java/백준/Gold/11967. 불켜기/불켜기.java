@@ -2,12 +2,11 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, M, answer;
-    static boolean[][] map;
-    static boolean[][] visited;
-    static Map<Integer, List<Integer>> switches = new HashMap<>();
-    static int[] dy = {1, -1, 0, 0};
-    static int[] dx = {0, 0, 1, -1};
+    static int N, M;
+    static boolean[][] lightOn, visited;
+    static List<int[]>[][] switches;
+    static int[] dx = {0, 1, 0, -1};
+    static int[] dy = {-1, 0, 1, 0};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -16,11 +15,13 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
-        map = new boolean[N][N];
+        lightOn = new boolean[N][N];
         visited = new boolean[N][N];
-        map[0][0] = true;
-        visited[0][0] = true;
-        answer = 1;
+        switches = new ArrayList[N][N];
+
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                switches[i][j] = new ArrayList<>();
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
@@ -29,50 +30,50 @@ public class Main {
             int a = Integer.parseInt(st.nextToken()) - 1;
             int b = Integer.parseInt(st.nextToken()) - 1;
 
-            switches.computeIfAbsent(y * 100 + x, k -> new ArrayList<>()).add(b * 100 + a);
+            switches[y][x].add(new int[]{b, a});
         }
 
-        Queue<Integer> queue = new ArrayDeque<>();
+        lightOn[0][0] = true;
+        visited[0][0] = true;
 
-        queue.add(0);
+        Queue<int[]> q = new ArrayDeque<>();
+        q.add(new int[]{0, 0});
 
-        while (!queue.isEmpty()) {
-            int nxt = queue.poll();
+        int answer = 1;
 
-            int nxtY = nxt / 100;
-            int nxtX = nxt % 100;
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int y = cur[0];
+            int x = cur[1];
 
-            List<Integer> nextSwitches = switches.get(nxt);
+            for (int[] s : switches[y][x]) {
+                int ny = s[0];
+                int nx = s[1];
 
+                if (!lightOn[ny][nx]) {
+                    lightOn[ny][nx] = true;
+                    answer++;
 
-            if (nextSwitches != null) {
-                boolean isSwitched = false;
+                    for (int d = 0; d < 4; d++) {
+                        int ay = ny + dy[d];
+                        int ax = nx + dx[d];
 
-                for (Integer nextSwitch : nextSwitches) {
-                    int y = nextSwitch / 100;
-                    int x = nextSwitch % 100;
-
-                    if (!map[y][x]) {
-                        isSwitched = true;
-                        answer++;
-                        map[y][x] = true;
+                        if (0 <= ay && ay < N && 0 <= ax && ax < N && visited[ay][ax]) {
+                            visited[ny][nx] = true;
+                            q.add(new int[]{ny, nx});
+                            break;
+                        }
                     }
-                }
-
-                if (isSwitched) {
-                    visited = new boolean[N][N];
-                    visited[nxtY][nxtX] = true;
                 }
             }
 
+            for (int d = 0; d < 4; d++) {
+                int ny = y + dy[d];
+                int nx = x + dx[d];
 
-            for (int i = 0; i < 4; i++) {
-                int ny = nxtY + dy[i];
-                int nx = nxtX + dx[i];
-
-                if (0 <= ny && ny < N && 0 <= nx && nx < N && map[ny][nx] && !visited[ny][nx]) {
+                if (0 <= ny && ny < N && 0 <= nx && nx < N && lightOn[ny][nx] && !visited[ny][nx]) {
                     visited[ny][nx] = true;
-                    queue.add(ny * 100 + nx);
+                    q.add(new int[]{ny, nx});
                 }
             }
         }
