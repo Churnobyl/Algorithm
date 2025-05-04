@@ -14,6 +14,7 @@ public class Main {
     static int[] preOrder, inOrder;
     static int index;
     static Node root;
+    static StringBuilder sb;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -41,15 +42,17 @@ public class Main {
             root = new Node();
             recursion(root, 0, N - 1);
 
+            sb = new StringBuilder();
+
             find(root);
-            System.out.println("");
+            System.out.println(sb);
         }
     }
 
     private static void find(Node node) {
         if (node.l != null) find(node.l);
         if (node.r != null) find(node.r);
-        System.out.print(node.data + " ");
+        sb.append(node.data).append(" ");
     }
 
     private static void recursion(Node node, int s, int e) {
