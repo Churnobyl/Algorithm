@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
     static int N;
     static int[] P;
-    static int[][] dp;
+    static int[] dp;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -18,18 +18,16 @@ public class Main {
             P[i] = Integer.parseInt(st.nextToken());
         }
 
-        dp = new int[N + 1][N + 1];
+        dp = new int[N + 1];
 
         for (int i = 1; i < N + 1; i++) {
-            for (int j = 1; j < N + 1; j++) {
-                if (j - i >= 0) {
-                    dp[i][j] = Math.max(dp[i - 1][j], Math.max(dp[i - 1][j - i] + P[i], dp[i][j - i] + P[i]));
-                } else {
-                    dp[i][j] = dp[i - 1][j];
-                }
+            dp[i] = Math.max(dp[i], P[i]);
+
+            for (int j = i + 1; j < N + 1; j++) {
+                dp[j] = Math.max(dp[j - i] + dp[i], dp[j]);
             }
         }
 
-        System.out.println(dp[N][N]);
+        System.out.println(dp[N]);
     }
 }
