@@ -3,107 +3,65 @@ import java.util.*;
 
 public class Main {
     static class Node {
-        char character;
-        Map<Character, Node> children = new HashMap<>();
-        int size = 1;
-        boolean haveLastWord;
-
-        public Node(char character) {
-            this.character = character;
-        }
-
-        @Override
-        public String toString() {
-            return "Node{" +
-                    "character=" + character +
-                    ", size=" + size +
-                    ", haveLastWord=" + haveLastWord +
-                    ", children=" + children +
-                    '}';
-        }
+        Node[] children = new Node[26];
+        boolean isEnd;
+        int childCount;
     }
 
-    static Map<Character, Node> root = new HashMap<>();
-    static int result;
+    static Node root;
+    static int totalKeyPress;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        String line;
         StringBuilder sb = new StringBuilder();
 
+        String line;
         while ((line = br.readLine()) != null) {
             if (line.trim().isEmpty()) continue;
-            root.clear();
-            int N = Integer.parseInt(line);
+            int N = Integer.parseInt(line.trim());
+            root = new Node();
+            List<String> words = new ArrayList<>(N);
 
             for (int i = 0; i < N; i++) {
                 String word = br.readLine();
-                if (word == null) break;
-
-                placeWord(word);
+                words.add(word);
+                insert(word);
             }
 
-            result = 0;
-            findWord();
-            sb.append(String.format("%.2f", result / (double)N)).append("\n");
+            totalKeyPress = 0;
+            for (String word : words) {
+                totalKeyPress += countPress(word);
+            }
+            sb.append(String.format("%.2f", totalKeyPress / (double)N)).append("\n");
         }
-
-        System.out.println(sb);
+        System.out.print(sb);
     }
 
-    private static void findWord() {
-        for (Node node : root.values()) {
-            dfs(node, node.size, 1);
+    static void insert(String word) {
+        Node node = root;
+        for (char ch : word.toCharArray()) {
+            int idx = ch - 'a';
+            if (node.children[idx] == null) {
+                node.children[idx] = new Node();
+                node.childCount++;
+            }
+            node = node.children[idx];
         }
+        node.isEnd = true;
     }
 
-    private static void dfs(Node node, int containsWord, int clicked) {
-        if (node.size == 1) {
-            result += clicked;
-            return;
-        }
+    static int countPress(String word) {
+        Node node = root;
+        int press = 1;
 
-        if (node.haveLastWord) {
-            result += clicked;
-        }
+        for (int i = 1; i < word.length(); i++) {
+            int idx = word.charAt(i - 1) - 'a';
+            node = node.children[idx];
 
-        for (Node child : node.children.values()) {
-            if (child.size == containsWord) {
-                dfs(child, child.size, clicked);
-            } else {
-                dfs(child, child.size, clicked + 1);
+            if (node.childCount > 1 || node.isEnd) {
+                press++;
             }
         }
-    }
-
-    private static void placeWord(String word) {
-        char[] characters = word.toCharArray();
-
-        Node node;
-
-        if (root.containsKey(characters[0])) {
-            node = root.get(characters[0]);
-            node.size++;
-        } else {
-            root.put(characters[0], new Node(characters[0]));
-            node = root.get(characters[0]);
-        }
-
-        if (characters.length < 2) node.haveLastWord = true;
-
-        for (int i = 1; i < characters.length; i++) {
-            if (node.children.containsKey(characters[i])) {
-                node = node.children.get(characters[i]);
-                node.size++;
-            } else {
-                node.children.put(characters[i], new Node(characters[i]));
-                node = node.children.get(characters[i]);
-            }
-
-            if (i == characters.length - 1) {
-                node.haveLastWord = true;
-            }
-        }
+        return press;
     }
 }
