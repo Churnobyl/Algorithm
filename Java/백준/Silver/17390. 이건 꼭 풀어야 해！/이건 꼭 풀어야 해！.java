@@ -4,33 +4,32 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         int N = Integer.parseInt(st.nextToken());
         int Q = Integer.parseInt(st.nextToken());
 
-        Integer[] arr = new Integer[N];
+        int[] arr = new int[N];
 
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
-
+        
         Arrays.sort(arr);
-
-        int[] prefixSum = new int[N + 1];
-        for (int i = 0; i < N; i++) {
-            prefixSum[i + 1] = prefixSum[i] + arr[i];
+        
+        long[] prefix = new long[N + 1];
+        for (int i = 1; i <= N; i++) {
+            prefix[i] = prefix[i - 1] + arr[i - 1];
         }
 
         StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < Q; i++) {
+        while (Q-- > 0) {
             st = new StringTokenizer(br.readLine());
-            int s = Integer.parseInt(st.nextToken());
-            int e = Integer.parseInt(st.nextToken());
+            int L = Integer.parseInt(st.nextToken());
+            int R = Integer.parseInt(st.nextToken());
 
-            sb.append(prefixSum[e] - prefixSum[s - 1]).append("\n");
+            sb.append(prefix[R] - prefix[L - 1]).append('\n');
         }
 
         System.out.print(sb);
