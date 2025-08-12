@@ -62,8 +62,11 @@ public class Main {
             moves[i] = p;
         }
 
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < dp[K] + 1; i++) {
-            System.out.print(moves[i] + " ");
+            sb.append(moves[i]).append(" ");
         }
+        System.out.println(sb);
     }
 }
