@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int n, a;
+    static int n;
     static int[] dp;
 
     public static void main(String[] args) throws IOException {
@@ -10,20 +10,11 @@ public class Main {
         n = Integer.parseInt(br.readLine());
         dp = new int[n + 1];
         dp[1] = dp[2] = 1;
-        A(n);
-        System.out.println(a);
-        System.out.println(B(n));
-    }
 
-    public static int A(int n) {
-        if (n == 1 || n == 2) {
-            a++;
-            return 1;
+        for (int i = 3; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
         }
-        return A(n - 1) + A(n - 2);
-    }
 
-    public static int B(int n) {
-        return n - 2;
+        System.out.println(dp[n] + " " + (n - 2));
     }
 }
