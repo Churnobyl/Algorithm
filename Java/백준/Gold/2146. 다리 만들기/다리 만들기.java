@@ -35,78 +35,62 @@ public class Main {
             }
         }
 
-        for (int[] boundary : boundaries) {
-            createBridge(boundary);
+        int[][] dist = new int[N][N];
+        ArrayDeque<int[]> q = new ArrayDeque<>();
+
+        for (int[] b : boundaries) {
+            q.offer(new int[]{b[0], b[1], b[2]});
+        }
+
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int y = cur[0], x = cur[1], land = cur[2];
+
+            for (int d = 0; d < 4; d++) {
+                int ny = y + dy[d], nx = x + dx[d];
+                if (ny < 0 || ny >= N || nx < 0 || nx >= N) continue;
+
+                if (map[ny][nx] == 0) {
+                    map[ny][nx] = land;
+                    dist[ny][nx] = dist[y][x] + 1;
+                    q.offer(new int[]{ny, nx, land});
+                }
+                else if (map[ny][nx] != land) {
+                    min = Math.min(min, dist[y][x] + dist[ny][nx]);
+                }
+            }
         }
 
         System.out.println(min);
     }
 
-    private static void createBridge(int[] boundary) {
-        int num = boundary[2];
-        boolean[][] visited = new boolean[N][N];
-
-        Queue<int[]> queue = new ArrayDeque<>();
-        queue.add(new int[] {boundary[0], boundary[1], 0});
-        visited[boundary[0]][boundary[1]] = true;
-
-        while (!queue.isEmpty()) {
-            int[] nxt = queue.poll();
-            int y = nxt[0];
-            int x = nxt[1];
-            int dist = nxt[2];
-
-            for (int i = 0; i < 4; i++) {
-                int ny = y + dy[i];
-                int nx = x + dx[i];
-
-                if (0 <= ny && ny < N && 0 <= nx && nx < N && !visited[ny][nx]) {
-                    visited[ny][nx] = true;
-                    if (map[ny][nx] > 0) {
-                        if (map[ny][nx] != num) {
-                            min = Math.min(min, dist);
-                            return;
-                        }
-                    } else {
-                        queue.add(new int[] {ny, nx, dist + 1});
-                    }
-                }
-            }
-        }
-    }
-
     private static void findAreaBfs(int y, int x, int num) {
         Queue<int[]> queue = new ArrayDeque<>();
         queue.add(new int[]{y, x});
+        visited[y][x] = true;
         map[y][x] = num;
 
         while (!queue.isEmpty()) {
-            int[] nxt = queue.poll();
-
+            int[] cur = queue.poll();
+            int cy = cur[0], cx = cur[1];
             boolean isBoundary = false;
 
-            for (int i = 0; i < 4; i++) {
-                int ny = nxt[0] + dy[i];
-                int nx = nxt[1] + dx[i];
+            for (int d = 0; d < 4; d++) {
+                int ny = cy + dy[d], nx = cx + dx[d];
+                if (ny < 0 || ny >= N || nx < 0 || nx >= N) continue;
 
-                if (0 <= ny && ny < N && 0 <= nx && nx < N) {
+                if (oriMap[ny][nx]) {
                     if (!visited[ny][nx]) {
                         visited[ny][nx] = true;
-                        if (oriMap[ny][nx]) {
-                            map[ny][nx] = num;
-                            queue.add(new int[]{ny, nx});
-                        }
+                        map[ny][nx] = num;
+                        queue.add(new int[]{ny, nx});
                     }
-
-                    if (!oriMap[ny][nx]) {
-                        isBoundary = true;
-                    }
+                } else {
+                    isBoundary = true;
                 }
             }
 
-            if (isBoundary) {
-                boundaries.add(new int[]{nxt[0], nxt[1], num});
-            }
+            if (isBoundary) boundaries.add(new int[]{cy, cx, num});
         }
     }
 }
