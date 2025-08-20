@@ -3,7 +3,6 @@ import java.util.*;
 
 public class Main {
     static int N, M, K, X;
-    static boolean[] cities;
     static List<Integer>[] edges;
     static int[] dp;
     static int cnt;
@@ -17,7 +16,6 @@ public class Main {
         K = Integer.parseInt(st.nextToken());
         X = Integer.parseInt(st.nextToken());
 
-        cities = new boolean[N + 1];
         edges = new List[N + 1];
         dp = new int[N + 1];
         Arrays.fill(dp, Integer.MAX_VALUE);
@@ -53,31 +51,22 @@ public class Main {
 
             for (int e : edge) {
                 if (dp[e] > dist + 1) {
-                    if (dp[e] == K) {
-                        cities[e] = false;
-                        cnt--;
-                    }
                     dp[e] = dist + 1;
-                    if (dp[e] == K) {
-                        cities[e] = true;
-                        cnt++;
-                    }
                     pq.add(new int[] {dist + 1, e});
                 }
             }
         }
 
-        if (cnt == 0) {
-            System.out.println(-1);
-            return;
-        }
-
         StringBuilder sb = new StringBuilder();
 
         for (int i = 1; i < N + 1; i++) {
-            if (cities[i]) sb.append(i).append("\n");
+            if (dp[i] == K) sb.append(i).append("\n");
         }
 
+        if (sb.toString().isEmpty()) {
+            System.out.println(-1);
+            return;
+        }
         System.out.println(sb);
     }
 }
