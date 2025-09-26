@@ -1,13 +1,12 @@
 SELECT 
-  b.TITLE,
-  b.BOARD_ID,
-  r.REPLY_ID,
-  r.WRITER_ID,
-  r.CONTENTS,
-  DATE_FORMAT(r.CREATED_DATE, '%Y-%m-%d') AS CREATED_DATE
-FROM USED_GOODS_BOARD b
-JOIN USED_GOODS_REPLY r
-  ON r.BOARD_ID = b.BOARD_ID
-WHERE b.CREATED_DATE >= '2022-10-01'
-  AND b.CREATED_DATE <  '2022-11-01'
-ORDER BY r.CREATED_DATE ASC, b.TITLE ASC;
+b.title as TITLE,
+b.board_id as BOARD_ID,
+r.reply_id as REPLY_ID,
+r.writer_id as WRITER_ID,
+r.contents as CONTENTS,
+DATE_FORMAT(r.created_date, '%Y-%m-%d') as CREATED_DATE
+FROM used_goods_reply as r
+INNER JOIN used_goods_board as b
+ON r.board_id = b.board_id
+WHERE YEAR(b.created_date) = 2022 AND MONTH(b.created_date) = 10
+ORDER BY r.created_date, b.title;
