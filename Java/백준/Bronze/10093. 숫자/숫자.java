@@ -9,11 +9,11 @@ public class Main {
 
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int A = Integer.parseInt(st.nextToken());
-        int B = Integer.parseInt(st.nextToken());
+        long A = Long.parseLong(st.nextToken());
+        long B = Long.parseLong(st.nextToken());
 
         if (A > B) {
-            int cache = A;
+            long cache = A;
             A = B;
             B = cache;
         }
@@ -22,7 +22,7 @@ public class Main {
 
         sb.append(Math.max(B - A - 1, 0)).append("\n");
 
-        for (int i = A + 1; i < B; i++) {
+        for (long i = A + 1; i < B; i++) {
             sb.append(i).append(" ");
         }
 
